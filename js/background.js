@@ -73,7 +73,7 @@ chrome.webRequest.onErrorOccurred.addListener(
     }, { urls: ["<all_urls>"] }
 );
 
-function findMedia(data, isRegex = false, filter = false, timer = false) {
+async function findMedia(data, isRegex = false, filter = false, timer = false) {
     if (timer) { return; }
     // Service Worker被强行杀死之后重新自我唤醒，等待全局变量初始化完成。
     if (!G || !G.initSyncComplete || !G.initLocalComplete || G.tabId == undefined || cacheData.init) {
@@ -200,6 +200,9 @@ function findMedia(data, isRegex = false, filter = false, timer = false) {
             tabFingerprints.clear();
         }
     }
+
+    // wait seconds for browser tab title update by music change
+    await new Promise(r => setTimeout(r, 1000));
 
     chrome.tabs.get(data.tabId, async function (webInfo) {
         if (chrome.runtime.lastError) { return; }
